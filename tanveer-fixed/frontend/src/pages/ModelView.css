@@ -1,0 +1,220 @@
+.model-view-page {
+    padding: 40px 20px;
+}
+
+.model-view-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+}
+
+@media (max-width: 768px) {
+    .model-view-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+.model-left-column {
+    /* Style content similar to screenshot */
+}
+
+.model-image-container {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.model-image {
+    max-width: 100%;
+    height: auto;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.model-title {
+    color: #cc0000;
+    /* Red color from screenshot */
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.model-subtitle {
+    color: #3f7bbf;
+    /* Blue color */
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+}
+
+.model-description {
+    color: #555;
+    margin-bottom: 20px;
+}
+
+.model-features h4 {
+    color: #3f7bbf;
+    margin-bottom: 10px;
+    text-transform: capitalize;
+}
+
+.model-features ul {
+    list-style: none;
+    padding: 0;
+}
+
+.model-features li {
+    padding: 5px 0;
+    color: #666;
+    border-bottom: 1px dotted #ccc;
+}
+
+/* Specs Table */
+.specs-title {
+    color: #3f7bbf;
+    margin-bottom: 15px;
+    font-size: 20px;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 10px;
+}
+
+.specs-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.specs-table th {
+    background-color: #3f7bbf;
+    color: white;
+    padding: 10px;
+    text-align: left;
+}
+
+.specs-table td {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    color: #444;
+}
+
+.specs-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* Extras Section (Brochure & Video) */
+/* Extras Section (Brochure & Video) */
+.model-extras-section {
+    margin-top: 30px;
+    /* Reduced from 60px */
+    padding-top: 20px;
+    /* Reduced from 40px */
+    border-top: 1px solid #eee;
+    max-width: 900px;
+    /* Constrain width */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.extras-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    /* Reduced from 40px */
+}
+
+@media (max-width: 768px) {
+    .extras-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Brochure Section */
+.brochure-section {
+    background-color: #f8f9fa;
+    padding: 15px;
+    /* Reduced from 30px */
+    border-radius: 6px;
+    text-align: center;
+    border: 1px solid #e9ecef;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.brochure-section h3 {
+    color: #3f7bbf;
+    margin-bottom: 8px;
+    /* Reduced */
+    font-size: 1.1rem;
+    /* Smaller font */
+}
+
+.brochure-section p {
+    color: #666;
+    margin-bottom: 12px;
+    /* Reduced */
+    font-size: 0.9rem;
+    /* Smaller font */
+}
+
+.btn-download {
+    display: inline-block;
+    background-color: #cc0000;
+    color: white;
+    padding: 8px 16px;
+    /* Reduced padding */
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    /* Smaller font */
+    transition: background-color 0.3s;
+    align-self: center;
+}
+
+.btn-download:hover {
+    background-color: #a30000;
+}
+
+/* Video Section */
+.video-section h3 {
+    color: #3f7bbf;
+    margin-bottom: 8px;
+    /* Reduced */
+    text-align: center;
+    font-size: 1.1rem;
+    /* Smaller font */
+}
+
+.video-wrapper {
+    position: relative;
+    padding-bottom: 56.25%;
+    /* 16:9 */
+    height: 0;
+    background-color: #000;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.video-wrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.video-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #999;
+    font-size: 1rem;
+    /* Smaller font */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+}

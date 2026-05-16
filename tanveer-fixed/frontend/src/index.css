@@ -1,0 +1,208 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap');
+
+:root {
+  /* Brand colours */
+  --emerald: #0A7A45;
+  --emerald-deep: #065A32;
+  --emerald-bright: #12A85F;
+  --emerald-light: #E6F5ED;
+  --emerald-xlight: #F0FAF4;
+  --gold: #C9A84C;
+
+  /* Neutrals */
+  --white: #FFFFFF;
+  --off-white: #FAFAF9;
+  --ink: #0D1B12;
+  --ink-soft: #1A2E20;
+  --gray-mid: #5A7065;
+  --gray-light: #D4E0D9;
+  --border: #D0DDD5;
+
+  /* Typography */
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+
+  /* Spacing */
+  --section-pad: 96px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 4px rgba(10, 122, 69, 0.08);
+  --shadow-md: 0 4px 20px rgba(10, 122, 69, 0.12);
+  --shadow-lg: 0 12px 48px rgba(10, 122, 69, 0.16);
+  --shadow-card: 0 2px 16px rgba(13, 27, 18, 0.07);
+
+  /* Border radii */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+}
+
+/* ─── Reset ───────────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--ink);
+  background: var(--white);
+  line-height: 1.65;
+  font-size: 16px;
+  overflow-x: hidden;
+}
+
+/* FIX: Removed overly-broad `* { font-family: !important }` that was overriding
+   everything including third-party components. Instead, scope display font
+   only to the elements that need it. */
+h1, h2, h3, h4, h5, h6,
+.display-heading,
+.section-title {
+  font-family: var(--font-display);
+}
+
+button {
+  font-family: var(--font-body);
+  cursor: pointer;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+ul {
+  list-style: none;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* ─── Layout ──────────────────────────────────────────────────────────────── */
+.container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ─── Typography helpers ──────────────────────────────────────────────────── */
+.section-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--emerald);
+  display: inline-block;
+  margin-bottom: 12px;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(26px, 3.5vw, 40px);
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.2;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.emerald-line {
+  display: block;
+  width: 48px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--emerald), var(--emerald-bright));
+  border-radius: 2px;
+  margin-bottom: 20px;
+}
+
+/* ─── Buttons ─────────────────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 28px;
+  background: var(--emerald);
+  color: var(--white);
+  border: 2px solid var(--emerald);
+  border-radius: 50px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.btn:hover {
+  background: var(--emerald-deep);
+  border-color: var(--emerald-deep);
+  box-shadow: 0 8px 24px rgba(10, 122, 69, 0.3);
+  transform: translateY(-1px);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--emerald);
+  border: 2px solid var(--emerald);
+}
+
+.btn-outline:hover {
+  background: var(--emerald);
+  color: var(--white);
+}
+
+.btn-ghost {
+  background: rgba(255, 255, 255, 0.12);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  color: var(--white);
+  backdrop-filter: blur(8px);
+}
+
+.btn-ghost:hover {
+  background: var(--white);
+  color: var(--emerald);
+}
+
+/* ─── Card ────────────────────────────────────────────────────────────────── */
+.card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-card);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--emerald-light);
+}
+
+/* ─── Animations ──────────────────────────────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ─── Scrollbar ───────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--off-white); }
+::-webkit-scrollbar-thumb { background: var(--emerald-light); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--emerald); }

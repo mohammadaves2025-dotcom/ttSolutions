@@ -1,0 +1,377 @@
+/* ─── Rich Text Editor Styles ────────────────────────────────────────────── */
+.rich-editor-wrapper {
+    border: 1.5px solid #d1d5db;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    font-family: 'Inter', Arial, sans-serif;
+}
+
+/* ── Toolbar ── */
+.rich-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 10px;
+    background: linear-gradient(to bottom, #f9fafb, #f3f4f6);
+    border-bottom: 1.5px solid #e5e7eb;
+    user-select: none;
+}
+
+.toolbar-group {
+    display: flex;
+    gap: 2px;
+    align-items: center;
+}
+
+.toolbar-divider {
+    width: 1px;
+    height: 24px;
+    background: #d1d5db;
+    margin: 0 4px;
+    flex-shrink: 0;
+}
+
+/* ── Toolbar Buttons ── */
+.tb-btn {
+    min-width: 34px;
+    height: 30px;
+    padding: 0 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: #fff;
+    color: #374151;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.12s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    line-height: 1;
+}
+
+.tb-btn:hover {
+    background: #e9ecef;
+    border-color: #9ca3af;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.tb-btn:active {
+    transform: translateY(0);
+    background: #dee2e6;
+    box-shadow: none;
+}
+
+/* Heading buttons */
+.heading-btn {
+    font-weight: 800;
+    font-size: 12px;
+    color: #1a56db;
+    border-color: #bfdbfe;
+    background: #eff6ff;
+    letter-spacing: 0.5px;
+}
+.heading-btn:hover {
+    background: #dbeafe;
+    border-color: #1a56db;
+}
+
+/* Link button */
+.link-btn {
+    color: #059669;
+    border-color: #a7f3d0;
+    background: #ecfdf5;
+    font-size: 12px;
+}
+.link-btn:hover {
+    background: #d1fae5;
+    border-color: #059669;
+}
+
+/* Bold/Italic/Underline/Strike */
+.tb-bold { font-size: 15px; }
+.tb-italic { font-style: italic; font-size: 14px; }
+.tb-underline { text-decoration: underline; }
+.tb-strike { text-decoration: line-through; }
+
+/* ── Dropdowns ── */
+.tb-select {
+    height: 30px;
+    padding: 0 6px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: #fff;
+    color: #374151;
+    font-size: 12px;
+    cursor: pointer;
+    max-width: 140px;
+    transition: border-color 0.12s;
+}
+
+.tb-select-size {
+    max-width: 75px;
+}
+
+.tb-select:hover { border-color: #9ca3af; }
+.tb-select:focus {
+    outline: none;
+    border-color: #1a56db;
+    box-shadow: 0 0 0 2px rgba(26,86,219,0.12);
+}
+
+/* ── Color Pickers ── */
+.tb-color-label {
+    position: relative;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 30px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: #fff;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.12s;
+}
+.tb-color-label:hover {
+    border-color: #9ca3af;
+    background: #f3f4f6;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.color-icon {
+    font-size: 13px;
+    font-weight: 800;
+    color: #111827;
+    line-height: 1;
+    pointer-events: none;
+}
+
+.color-highlight {
+    background: #fef08a;
+    padding: 0 3px;
+    border-radius: 2px;
+}
+
+.tb-color-label input[type="color"] {
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 20px;
+    opacity: 0;
+    cursor: pointer;
+    border: none;
+    padding: 0;
+}
+
+/* ══════════════ EDITOR AREA ══════════════ */
+.rich-editor-area {
+    min-height: 400px;
+    max-height: 600px;
+    padding: 20px 24px;
+    font-size: 16px;
+    line-height: 1.8;
+    color: #1f2937;
+    outline: none;
+    overflow-y: auto;
+    background: #fff;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.rich-editor-area:empty::before {
+    content: attr(data-placeholder);
+    color: #9ca3af;
+    pointer-events: none;
+    font-style: italic;
+}
+
+/* Content inside editor */
+.rich-editor-area h1 {
+    font-size: 2em !important;
+    font-weight: 800;
+    color: #111827;
+    margin: 16px 0 8px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid #e5e7eb;
+}
+.rich-editor-area h2 {
+    font-size: 1.5em !important;
+    font-weight: 700;
+    color: #1e3a8a;
+    margin: 14px 0 6px;
+}
+.rich-editor-area h3 {
+    font-size: 1.25em !important;
+    font-weight: 600;
+    color: #374151;
+    margin: 12px 0 4px;
+}
+.rich-editor-area a {
+    color: #1a56db;
+    text-decoration: underline;
+    font-weight: 500;
+    background: rgba(26,86,219,0.07);
+    padding: 0 3px;
+    border-radius: 3px;
+}
+.rich-editor-area ul,
+.rich-editor-area ol { padding-left: 24px; margin: 8px 0; }
+.rich-editor-area li { margin: 4px 0; }
+.rich-editor-area hr {
+    border: none;
+    border-top: 2px solid #e5e7eb;
+    margin: 16px 0;
+}
+
+/* ══════════════ LINK MODAL ══════════════ */
+.link-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    backdrop-filter: blur(4px);
+}
+
+.link-modal {
+    background: #fff;
+    border-radius: 14px;
+    padding: 28px 32px;
+    width: 440px;
+    max-width: 95vw;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    animation: modalIn 0.18s ease;
+}
+
+@keyframes modalIn {
+    from { opacity: 0; transform: scale(0.94) translateY(-12px); }
+    to   { opacity: 1; transform: scale(1)    translateY(0); }
+}
+
+.link-modal h4 {
+    margin: 0 0 20px;
+    font-size: 1.15em;
+    color: #111827;
+    font-weight: 700;
+}
+
+.lm-field { margin-bottom: 14px; }
+.lm-field label {
+    display: block;
+    font-size: 0.82em;
+    font-weight: 600;
+    color: #6b7280;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.lm-field input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1.5px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #1f2937;
+    box-sizing: border-box;
+    transition: border-color 0.15s;
+}
+.lm-field input:focus {
+    outline: none;
+    border-color: #1a56db;
+    box-shadow: 0 0 0 3px rgba(26,86,219,0.1);
+}
+
+.lm-actions { display: flex; gap: 10px; margin-top: 20px; }
+
+.lm-insert-btn {
+    flex: 1;
+    padding: 10px;
+    background: #1a56db;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.lm-insert-btn:hover { background: #1e40af; }
+
+.lm-cancel-btn {
+    flex: 1;
+    padding: 10px;
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.lm-cancel-btn:hover { background: #e5e7eb; }
+
+/* ══════════════ BLOG FRONTEND RENDERING ══════════════ */
+.blog-rich-content {
+    font-size: 16px;
+    line-height: 1.9;
+    color: #1f2937;
+}
+
+.blog-rich-content h1 {
+    font-size: 2em;
+    font-weight: 800;
+    color: #111827;
+    margin: 28px 0 14px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e5e7eb;
+}
+.blog-rich-content h2 {
+    font-size: 1.5em;
+    font-weight: 700;
+    color: #1e3a8a;
+    margin: 22px 0 10px;
+}
+.blog-rich-content h3 {
+    font-size: 1.25em;
+    font-weight: 600;
+    color: #374151;
+    margin: 16px 0 8px;
+}
+.blog-rich-content a {
+    color: #1a56db;
+    text-decoration: underline;
+    font-weight: 500;
+    background: rgba(26,86,219,0.07);
+    padding: 1px 4px;
+    border-radius: 3px;
+    transition: background 0.15s;
+}
+.blog-rich-content a:hover {
+    background: rgba(26,86,219,0.15);
+    color: #1e40af;
+}
+.blog-rich-content ul,
+.blog-rich-content ol { padding-left: 28px; margin: 12px 0; }
+.blog-rich-content li { margin: 6px 0; }
+.blog-rich-content strong { font-weight: 700; color: #111827; }
+.blog-rich-content em { font-style: italic; }
+.blog-rich-content p { margin: 10px 0; }
+.blog-rich-content hr {
+    border: none;
+    border-top: 2px solid #e5e7eb;
+    margin: 24px 0;
+}
+.blog-rich-content u { text-decoration: underline; }
+.blog-rich-content s { text-decoration: line-through; }

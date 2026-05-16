@@ -1,0 +1,143 @@
+.product-detail-page {
+    padding-top: 40px;
+    padding-bottom: 60px;
+}
+
+.product-detail-layout {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+}
+
+/* Left Column */
+.left-column {
+    flex: 0 0 300px;
+    /* Fixed width for the image column */
+    border-right: 1px solid #e0e0e0;
+    /* Vertical separator */
+    padding-right: 20px;
+    text-align: center;
+}
+
+.featured-image-container {
+    position: sticky;
+    top: 100px;
+    /* Sticky scroll for image */
+}
+
+.featured-image {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto 20px;
+}
+
+.featured-title {
+    color: #dc3545;
+    /* Updated to Brand Red */
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+}
+
+.featured-specs {
+    color: var(--text-dark);
+    /* Updated to dark text */
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+/* Right Column */
+.right-column {
+    flex: 1;
+    /* Takes remaining space */
+}
+
+.models-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    /* Responsive columns */
+    gap: 30px;
+}
+
+.model-category {
+    margin-bottom: 10px;
+}
+
+.model-category h3 {
+    color: var(--text-dark);
+    font-size: 1rem;
+    margin-bottom: 10px;
+    border-bottom: none;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.model-category ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.model-category li {
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+}
+
+.model-category a {
+    text-decoration: none;
+    color: #dc3545;
+    /* Updated to Brand Red */
+    display: inline-block;
+    font-weight: 700;
+    transition: color 0.2s;
+}
+
+.model-category a:hover {
+    color: #a71d2a;
+    /* Darker red on hover */
+}
+
+.model-category a span {
+    color: #dc3545;
+}
+
+.model-category a .specs {
+    color: var(--mid-gray);
+    /* Updated to neutral gray for specs */
+    font-weight: 400;
+}
+
+.tag {
+    font-size: 0.75rem;
+    color: var(--mid-gray);
+    margin-left: 5px;
+    font-weight: bold;
+}
+
+.gem {
+    color: orange;
+    /* Keeping GeM color as it is a specific brand/logo color */
+    font-weight: 800;
+}
+
+
+@media (max-width: 768px) {
+    .product-detail-layout {
+        flex-direction: column;
+    }
+
+    .left-column {
+        flex: auto;
+        border-right: none;
+        padding-right: 0;
+        border-bottom: 1px solid #e0e0e0;
+        padding-bottom: 20px;
+    }
+
+    .models-grid {
+        grid-template-columns: 1fr;
+        /* Single column on mobile */
+    }
+}

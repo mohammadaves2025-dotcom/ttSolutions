@@ -1,0 +1,203 @@
+.products-section {
+    padding: 60px 0;
+    background-color: #ffffff;
+    /* White background as requested */
+}
+
+/* If the homepage background isn't dark, you might need to adjust, 
+   but the image shows a dark background outside the cards. */
+
+.section-title {
+    color: #111;
+    /* Dark text for title */
+    margin-bottom: 30px;
+    font-size: 24px;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-top: 30px;
+}
+
+.product-card {
+    background: #ffffff;
+    border-radius: 8px;
+    border: 1px solid #eaeaea;
+    /* Light border */
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+}
+
+.product-card:hover {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.card-top-section {
+    position: relative;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 15px;
+}
+
+.discount-badge {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: #ff7e1a;
+    /* Orange */
+    color: white;
+    font-size: 13px;
+    font-weight: bold;
+    padding: 4px 8px;
+    border-radius: 2px;
+    z-index: 2;
+}
+
+.side-brand-vertical {
+    position: absolute;
+    top: 10px;
+    right: 0;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    color: #222;
+    font-size: 12px;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.side-brand-vertical .side-name b {
+    color: #e02626;
+    /* Red for brand name like AVANTI */
+    font-size: 14px;
+}
+
+.side-brand-vertical .side-desc {
+    color: #666;
+    font-size: 11px;
+}
+
+
+.card-image-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 160px;
+    margin-top: 15px;
+}
+
+.card-image-wrapper img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.stock-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background-color: #f0fdf4;
+    /* Light green background */
+    color: #16a34a;
+    /* Green text */
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 10px;
+}
+
+.tick-icon {
+    stroke-width: 3;
+}
+
+.card-bottom-section {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.product-sku {
+    color: #888;
+    font-size: 12px;
+    margin-bottom: 6px;
+}
+
+.product-card-title {
+    font-size: 15px;
+    color: #111;
+    font-weight: 700;
+    line-height: 1.4;
+    margin-bottom: 15px;
+    flex-grow: 1;
+    /* Pushes the price and buttons to the bottom */
+}
+
+.product-price-box {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+}
+
+.product-price-box .rupee,
+.product-price-box .amount {
+    color: #10b981;
+    /* Green color */
+    font-weight: 800;
+    font-size: 22px;
+}
+
+.product-price-box .net-txt {
+    color: #111;
+    font-size: 12px;
+    font-weight: 600;
+    margin-left: 4px;
+}
+
+.product-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.btn-view-details {
+    background-color: #0f8b4d;
+    /* Dark green */
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    padding: 10px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 14px;
+    transition: background 0.2s;
+    width: 100%;
+}
+
+.btn-view-details:hover {
+    background-color: #0c7340;
+}
+
+@media (max-width: 900px) {
+    .products-section {
+        padding: 40px 0;
+    }
+
+    .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .product-grid {
+        grid-template-columns: 1fr;
+    }
+}

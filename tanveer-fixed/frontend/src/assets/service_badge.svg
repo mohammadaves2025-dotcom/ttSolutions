@@ -1,0 +1,11 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <!-- Outer Ring -->
+  <circle cx="60" cy="60" r="58" fill="#f9fafb" stroke="#0B874B" stroke-width="4"/>
+  
+  <!-- Content -->
+  <text x="60" y="45" font-family="Arial, sans-serif" font-weight="bold" font-size="14" text-anchor="middle" fill="#0B874B">SERVICE</text>
+  <text x="60" y="60" font-family="Arial, sans-serif" font-weight="bold" font-size="14" text-anchor="middle" fill="#0B874B">EXPERT</text>
+  
+  <!-- Checkmark Icon (Tick) Below text -->
+  <path d="M45 80 L55 90 L75 70" stroke="#0B874B" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

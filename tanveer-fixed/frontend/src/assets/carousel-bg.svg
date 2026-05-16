@@ -1,0 +1,26 @@
+<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#060606;stop-opacity:1" />
+    </linearGradient>
+    <pattern id="hexagons" x="0" y="0" width="50" height="43.301" patternUnits="userSpaceOnUse">
+      <path d="M25 0 L50 14.4338 L50 43.3013 L25 57.735 L0 43.3013 L0 14.4338 Z" fill="none" stroke="#1e293b" stroke-width="1"/>
+    </pattern>
+  </defs>
+  
+  <!-- Base Dark Gradient -->
+  <rect width="100%" height="100%" fill="url(#grad1)" />
+  
+  <!-- Subtle Hexagon Pattern Overlay -->
+  <rect width="100%" height="100%" fill="url(#hexagons)" opacity="0.1" />
+  
+  <!-- Green Accent Glow (Radial) -->
+  <circle cx="90%" cy="10%" r="500" fill="url(#greenGlow)" />
+  <defs>
+      <radialGradient id="greenGlow">
+          <stop offset="0%" stop-color="#0B874B" stop-opacity="0.15"/>
+          <stop offset="100%" stop-color="#060606" stop-opacity="0"/>
+      </radialGradient>
+  </defs>
+</svg>

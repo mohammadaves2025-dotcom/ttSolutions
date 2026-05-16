@@ -1,0 +1,62 @@
+.hero {
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://placehold.co/1200x600/2C5A8C/ffffff?text=Avanti+Hero+Image');
+    /* Placeholder for now */
+    background-size: cover;
+    background-position: center;
+    height: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    color: #fff;
+}
+
+.hero-content {
+    width: 100%;
+}
+
+.hero-text-box {
+    max-width: 600px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 40px;
+    border-radius: 4px;
+    color: var(--text-dark);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border-left: 5px solid var(--accent-red);
+}
+
+.hero-text-box h2 {
+    font-size: 32px;
+    margin-bottom: 10px;
+    line-height: 1.2;
+}
+
+.hero-text-box h3 {
+    font-size: 24px;
+    font-weight: 400;
+    margin-bottom: 20px;
+    color: var(--text-light);
+}
+
+.highlight {
+    color: var(--accent-red);
+}
+
+.hero-btn {
+    margin-top: 10px;
+    font-size: 16px;
+}
+
+@media (max-width: 768px) {
+    .hero {
+        height: 400px;
+    }
+
+    .hero-text-box {
+        margin: 0 20px;
+        padding: 20px;
+    }
+
+    .hero-text-box h2 {
+        font-size: 24px;
+    }
+}
