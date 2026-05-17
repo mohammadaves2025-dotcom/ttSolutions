@@ -108,7 +108,6 @@ const Home = () => {
           box-shadow: 0 2px 12px rgba(13,27,18,0.06);
         }
         .product-card-img { aspect-ratio: 4/3; overflow: hidden; background: var(--emerald-xlight); position: relative; display: flex; align-items: center; justify-content: center; }
-        .product-card-img img { width: 75%; height: 85%; object-fit: contain; transition: transform 0.5s ease; }  
         .product-card-img img { width: 60%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
         .product-card:hover .product-card-img img { transform: scale(1.06); }
         .product-card-badge { position: absolute; top: 12px; left: 12px; background: var(--emerald); color: white; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 10px; border-radius: 20px; }
@@ -191,10 +190,26 @@ const Home = () => {
           .products-grid { grid-template-columns: 1fr; }
           .features-grid { grid-template-columns: 1fr; }
           .brand-cards { grid-template-columns: 1fr; }
-          .cta-inner { padding: 40px 24px; flex-direction: column; text-align: center; }
-          .cta-actions { justify-content: center; }
-          .stats-grid { grid-template-columns: repeat(2, 1fr); }
+          .cta-inner { padding: 32px 20px; flex-direction: column; text-align: center; }
+          .cta-actions { justify-content: center; width: 100%; }
+          .cta-actions a, .cta-actions button { width: 100%; justify-content: center; }
+          .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+          .stats-strip { padding: 28px 0; }
+          .stat-value { font-size: clamp(26px, 8vw, 40px); }
           .gem-divider { display: none; }
+          .gem-inner { flex-direction: column; align-items: flex-start; gap: 12px; }
+          .gem-badge { width: 100%; }
+          .gem-note { font-size: 12px; }
+          .products-section { padding: 56px 0; }
+          .features-section { padding: 56px 0; }
+          .brands-section { padding: 56px 0; }
+          .clients-section { padding: 56px 0; }
+          .cta-banner { padding: 48px 0; }
+          .products-section-header { margin-bottom: 32px; }
+          .product-card-body { padding: 16px; }
+          .feature-card { padding: 24px 18px; }
+          .brands-inner { gap: 28px; }
+          .brands-text p { font-size: 14px; }
         }
       `}</style>
 
