@@ -26,10 +26,12 @@ const AdminEditProduct = () => {
         specifications: {}
     });
 
-    // Load data if editing
     useEffect(() => {
-        const isAdmin = localStorage.getItem('isAdmin');
+        const isAdmin = localStorage.getItem('authToken');
         if (!isAdmin) navigate('/admin');
+
+        // Wait for allModels to load before doing anything
+        if (!isNew && Object.keys(allModels).length === 0) return;
 
         if (!isNew && allModels[modelId]) {
             const m = allModels[modelId];
@@ -44,22 +46,22 @@ const AdminEditProduct = () => {
                 image: m.image || '',
                 videoLink: m.videoLink || '',
                 brochureLink: m.brochureLink || '',
-                features: m.features || [],
-                specifications: m.specifications || {}
+                // FIX: seed data uses keyFeatures, admin form uses features
+                features: m.keyFeatures || m.features || [],
+                // FIX: seed data uses specs, admin form uses specifications
+                specifications: m.specs || m.specifications || {}
             });
         } else if (!isNew && Object.keys(allModels).length > 0) {
-            // alert('Product not found');
-            // navigate('/admin/dashboard');
+            alert('Product not found');
+            navigate('/admin/dashboard');
         }
     }, [modelId, allModels, navigate, isNew]);
 
-    // Handle basic fields
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    // Handle Features (Array)
     const handleFeatureChange = (index, value) => {
         const newFeatures = [...formData.features];
         newFeatures[index] = value;
@@ -75,24 +77,6 @@ const AdminEditProduct = () => {
         setFormData(prev => ({ ...prev, features: newFeatures }));
     };
 
-    // Handle Specifications (Map/Object)
-    const handleSpecChange = (key, field, value) => {
-        const newSpecs = { ...formData.specifications };
-
-        if (field === 'key') {
-            // Key change is tricky, simpler to delete old and add new, but for React input simplicity:
-            // We will map specs to array for editing and convert back on save/change?
-            // Easier way: store specs as array of {key, value} in state, convert to object on save
-            // But for now let's try direct object manipulation logic if keys are stable.
-            // Actually, let's use a temporary array state for specs editing to allow key editing
-        } else {
-            // value change
-            newSpecs[key] = value;
-            setFormData(prev => ({ ...prev, specifications: newSpecs }));
-        }
-    };
-
-    // Better config for Specs: Convert to array for editing
     const [specsArray, setSpecsArray] = useState([]);
 
     useEffect(() => {
@@ -118,7 +102,6 @@ const AdminEditProduct = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Convert specs array back to object
         const specsObj = specsArray.reduce((acc, item) => {
             if (item.key) acc[item.key] = item.value;
             return acc;
@@ -131,7 +114,6 @@ const AdminEditProduct = () => {
 
         try {
             if (isNew) {
-                // Ensure ID is set
                 if (!finalData.id) finalData.id = finalData.title.toLowerCase().replace(/ /g, '-');
                 await addModel(finalData);
                 alert('Product created!');
@@ -146,8 +128,6 @@ const AdminEditProduct = () => {
         }
     };
 
-    // Get unique categories for suggestion
-    const categories = [...new Set(Object.values(allModels).map(m => m.category).filter(Boolean))];
     const subcategories = [...new Set(Object.values(allModels).map(m => m.subcategory).filter(Boolean))];
 
     return (
@@ -163,50 +143,35 @@ const AdminEditProduct = () => {
                         <div className="form-group" style={{ flex: 1 }}>
                             <label>Brand</label>
                             <select name="brand" value={formData.brand} onChange={handleChange} style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ddd' }}>
-                                <option value="Antiva">Antiva</option>
-                                <option value="Avanti">Avanti</option>
+                                <option value="ANTIVA">ANTIVA</option>
+                                <option value="AVANTI">AVANTI</option>
                                 <option value="Other">Other</option>
                             </select>
                         </div>
                         <div className="form-group" style={{ flex: 1 }}>
                             <label>Category</label>
-                            <div style={{ display: 'flex', gap: '5px' }}>
-                                <select
-                                    name="category"
-                                    value={formData.category}
-                                    onChange={handleChange}
-                                    required
-                                    style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ddd' }}
-                                >
-                                    <option value="" disabled>Select Category</option>
-                                    <option value="Document Shredders">Document Shredders</option>
-                                    <option value="Multipurpose Application Shredders">Multipurpose Application Shredders</option>
-                                    <option value="Document Laminators & Binders">Document Laminators & Binders</option>
-                                    <option value="Waste Management & Recycling">Waste Management & Recycling</option>
-                                    <option value="Products on GeM">Products on GeM</option>
-                                    {[...new Set(Object.values(allModels).map(m => m.category).filter(Boolean))].filter(c =>
-                                        c !== 'Document Shredders' &&
-                                        c !== 'Multipurpose Application Shredders' &&
-                                        c !== 'Document Laminators & Binders' &&
-                                        c !== 'Waste Management & Recycling' &&
-                                        c !== 'Products on GeM'
-                                    ).map(c => (
-                                        <option key={c} value={c}>{c}</option>
-                                    ))}
-                                    <option value="New Category...">+ Add New Category</option>
-                                </select>
-                            </div>
-                            {formData.category === 'New Category...' && (
-                                <input
-                                    type="text"
-                                    name="category"
-                                    value=""
-                                    onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
-                                    placeholder="Type new category"
-                                    required
-                                    style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ddd', marginTop: '5px' }}
-                                />
-                            )}
+                            <select
+                                name="category"
+                                value={formData.category}
+                                onChange={handleChange}
+                                required
+                                style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ddd' }}
+                            >
+                                <option value="" disabled>Select Category</option>
+                                <option value="Document Shredders">Document Shredders</option>
+                                <option value="Special Application">Special Application</option>
+                                <option value="Laminators">Laminators</option>
+                                <option value="Multipurpose Application Shredders">Multipurpose Application Shredders</option>
+                                <option value="Document Laminators & Binders">Document Laminators & Binders</option>
+                                <option value="Waste Management & Recycling">Waste Management & Recycling</option>
+                                <option value="Products on GeM">Products on GeM</option>
+                                {[...new Set(Object.values(allModels).map(m => m.category).filter(Boolean))].filter(c =>
+                                    !['Document Shredders','Special Application','Laminators','Multipurpose Application Shredders',
+                                      'Document Laminators & Binders','Waste Management & Recycling','Products on GeM'].includes(c)
+                                ).map(c => (
+                                    <option key={c} value={c}>{c}</option>
+                                ))}
+                            </select>
                         </div>
                         <div className="form-group" style={{ flex: 1 }}>
                             <label>Subcategory</label>
@@ -219,7 +184,7 @@ const AdminEditProduct = () => {
 
                     <div className="form-group">
                         <label>Product ID (Unique Key)</label>
-                        <input name="id" value={formData.id} onChange={handleChange} disabled={!isNew} required />
+                        <input name="id" value={formData.id} onChange={handleChange} disabled={!isNew} required style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ddd' }} />
                     </div>
 
                     <div className="form-group">
@@ -234,41 +199,39 @@ const AdminEditProduct = () => {
                             value={formData.image}
                             onChange={handleChange}
                             placeholder="Or enter URL manually"
-                            style={{ marginTop: '10px' }}
+                            style={{ marginTop: '10px', width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ddd' }}
                         />
                     </div>
 
                     <div className="form-group">
                         <label>Title</label>
-                        <input name="title" value={formData.title} onChange={handleChange} required />
+                        <input name="title" value={formData.title} onChange={handleChange} required style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ddd' }} />
                     </div>
 
                     <div className="form-group">
                         <label>Subtitle / Tag</label>
-                        <input name="subtitle" value={formData.subtitle} onChange={handleChange} />
+                        <input name="subtitle" value={formData.subtitle} onChange={handleChange} style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ddd' }} />
                     </div>
 
                     <div className="form-group">
                         <label>Description</label>
-                        <textarea name="description" value={formData.description} onChange={handleChange} rows="3" />
+                        <textarea name="description" value={formData.description} onChange={handleChange} rows="3" style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ddd' }} />
                     </div>
-
-
 
                     <div className="form-row" style={{ display: 'flex', gap: '20px' }}>
                         <div className="form-group" style={{ flex: 1 }}>
                             <label>Video Embed Link</label>
-                            <input name="videoLink" value={formData.videoLink} onChange={handleChange} />
+                            <input name="videoLink" value={formData.videoLink} onChange={handleChange} style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ddd' }} />
                         </div>
                         <div className="form-group" style={{ flex: 1 }}>
                             <label>Brochure Link</label>
-                            <input name="brochureLink" value={formData.brochureLink} onChange={handleChange} />
+                            <input name="brochureLink" value={formData.brochureLink} onChange={handleChange} style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ddd' }} />
                         </div>
                     </div>
 
                     <hr style={{ margin: '20px 0', border: '0', borderTop: '1px solid #ddd' }} />
 
-                    <h3>Features</h3>
+                    <h3>Key Features</h3>
                     <div className="features-editor">
                         {formData.features.map((feature, index) => (
                             <div key={index} style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
@@ -276,6 +239,7 @@ const AdminEditProduct = () => {
                                     value={feature}
                                     onChange={(e) => handleFeatureChange(index, e.target.value)}
                                     placeholder="Feature description"
+                                    style={{ flex: 1, padding: '8px', borderRadius: '4px', border: '1px solid #ddd' }}
                                 />
                                 <button type="button" onClick={() => removeFeature(index)} className="cancel-btn" style={{ padding: '0 10px', background: '#dc3545' }}>X</button>
                             </div>
@@ -293,13 +257,13 @@ const AdminEditProduct = () => {
                                     value={spec.key}
                                     onChange={(e) => handleSpecArrayChange(index, 'key', e.target.value)}
                                     placeholder="Spec Name (e.g. Cut Size)"
-                                    style={{ flex: 1 }}
+                                    style={{ flex: 1, padding: '8px', borderRadius: '4px', border: '1px solid #ddd' }}
                                 />
                                 <input
                                     value={spec.value}
                                     onChange={(e) => handleSpecArrayChange(index, 'value', e.target.value)}
                                     placeholder="Value (e.g. 4mm)"
-                                    style={{ flex: 1 }}
+                                    style={{ flex: 1, padding: '8px', borderRadius: '4px', border: '1px solid #ddd' }}
                                 />
                                 <button type="button" onClick={() => removeSpec(index)} className="cancel-btn" style={{ padding: '0 10px', background: '#dc3545' }}>X</button>
                             </div>

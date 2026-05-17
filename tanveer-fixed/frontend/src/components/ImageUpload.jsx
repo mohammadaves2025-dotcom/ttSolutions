@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { api } from '../services/api';
+import { adminApi } from '../services/api';
 
 const ImageUpload = ({ onUpload, existingImage, label = "Upload Image" }) => {
     const [uploading, setUploading] = useState(false);
@@ -24,7 +24,7 @@ const ImageUpload = ({ onUpload, existingImage, label = "Upload Image" }) => {
 
         try {
             // Use the centralized api service
-            const data = await api.uploadImage(formData);
+            const data = await adminApi.uploadImage(formData);
 
             if (data.success) {
                 setPreview(data.imageUrl);

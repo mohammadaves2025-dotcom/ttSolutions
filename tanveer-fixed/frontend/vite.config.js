@@ -5,6 +5,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
+    // Proxy only used in local dev — Vercel uses VITE_API_URL in production
     proxy: {
       '/api': {
         target: 'http://localhost:5000',
@@ -19,15 +20,12 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: false,
-    // FIX: increase warning limit to avoid false alarms for this bundle size
     chunkSizeWarningLimit: 800,
     rollupOptions: {
       output: {
-        // FIX: better chunk splitting — separate editor lib (heavy) from icons and vendor
         manualChunks: {
           vendor: ['react', 'react-dom', 'react-router-dom'],
           icons: ['lucide-react'],
-          editor: ['@uiw/react-md-editor'],
         },
       },
     },

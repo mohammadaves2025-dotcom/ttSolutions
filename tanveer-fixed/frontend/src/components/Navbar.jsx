@@ -19,8 +19,9 @@ const Navbar = () => {
   const companyName = settings?.companyName || 'T&T Office Solutions';
 
   useEffect(() => {
+    // Use passive listener for scroll performance
     const onScroll = () => setScrolled(window.scrollY > 30);
-    window.addEventListener('scroll', onScroll);
+    window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
@@ -32,7 +33,11 @@ const Navbar = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  useEffect(() => { setIsOpen(false); setProductsOpen(false); setMobileProductsOpen(false); }, [location]);
+  useEffect(() => {
+    setIsOpen(false);
+    setProductsOpen(false);
+    setMobileProductsOpen(false);
+  }, [location]);
 
   const products = [
     { label: 'Document Shredders', url: '/select-brand/document-shredders' },
@@ -53,13 +58,36 @@ const Navbar = () => {
   return (
     <>
       <style>{`
-        .tt-header { position: sticky; top: 0; z-index: 1000; transition: all 0.3s ease; }
+        .tt-header {
+          position: sticky;
+          top: 0;
+          z-index: 1000;
+          /* FIX: will-change tells the browser to composite this layer separately,
+             preventing reflow-induced flicker during scroll */
+          will-change: transform;
+          transform: translateZ(0);
+        }
+
+        /* FIX: use max-height + overflow instead of display:none
+           so the collapse can be transitioned smoothly without a layout jump */
         .utility-strip {
           background: var(--emerald-deep);
-          padding: 8px 0;
-          transition: all 0.3s;
+          overflow: hidden;
+          max-height: 48px;
+          /* Transition both max-height and padding so the collapse is smooth */
+          transition: max-height 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
+          opacity: 1;
         }
-        .utility-strip.hidden { display: none; }
+        .utility-strip.hidden {
+          max-height: 0;
+          padding-top: 0;
+          padding-bottom: 0;
+          opacity: 0;
+          /* No display:none — that causes the layout jump */
+        }
+        .utility-strip-inner {
+          padding: 8px 0;
+        }
         .utility-inner {
           display: flex; align-items: center; justify-content: space-between;
           gap: 16px; flex-wrap: wrap;
@@ -82,7 +110,8 @@ const Navbar = () => {
           background: var(--white);
           border-bottom: 1px solid var(--border);
           box-shadow: none;
-          transition: box-shadow 0.3s;
+          /* FIX: transition only box-shadow, not height or position */
+          transition: box-shadow 0.3s ease;
         }
         .main-bar.shadow { box-shadow: 0 4px 24px rgba(10,122,69,0.1); }
         .main-bar-inner {
@@ -103,8 +132,7 @@ const Navbar = () => {
         }
 
         .nav-links-desktop {
-          display: flex; align-items: center; gap: 4px;
-          list-style: none;
+          display: flex; align-items: center; gap: 4px; list-style: none;
         }
         .nav-links-desktop li a, .nav-links-desktop li button {
           padding: 8px 16px; border-radius: 50px;
@@ -131,10 +159,13 @@ const Navbar = () => {
           background: var(--white); border: 1px solid var(--border);
           border-radius: var(--radius-md); box-shadow: var(--shadow-lg);
           min-width: 280px; overflow: hidden;
-          animation: fadeUp 0.2s ease both;
+          animation: dropFadeUp 0.2s ease both;
           z-index: 100;
         }
-        @keyframes fadeUp { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes dropFadeUp {
+          from { opacity: 0; transform: translateY(-8px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
         .dropdown-panel a {
           display: flex; align-items: center; gap: 10px;
           padding: 13px 20px; font-size: 14px; font-weight: 500; color: var(--ink-soft);
@@ -154,7 +185,10 @@ const Navbar = () => {
           position: fixed; inset: 0; z-index: 999;
           background: var(--white); overflow-y: auto;
           display: flex; flex-direction: column;
-          transform: translateX(100%); transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+          transform: translateX(100%);
+          transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+          /* FIX: same compositing layer trick for mobile menu */
+          will-change: transform;
         }
         .mobile-menu.open { transform: translateX(0); }
         .mobile-menu-header {
@@ -173,7 +207,10 @@ const Navbar = () => {
           cursor: pointer; display: flex; justify-content: space-between; align-items: center;
         }
         .mobile-sub-links { padding: 8px 0 8px 16px; }
-        .mobile-sub-links a { font-size: 14px; font-weight: 400; color: var(--gray-mid); padding: 10px 0; }
+        .mobile-sub-links a {
+          font-size: 14px; font-weight: 400; color: var(--gray-mid);
+          padding: 10px 0;
+        }
         .mobile-contact { padding: 24px; border-top: 1px solid var(--border); }
         .mobile-contact p { font-size: 13px; color: var(--gray-mid); margin-bottom: 8px; }
         .mobile-contact a { font-size: 15px; font-weight: 600; color: var(--emerald); display: block; margin-bottom: 6px; }
@@ -184,28 +221,30 @@ const Navbar = () => {
           .util-contact .util-link:nth-child(2) { display: none; }
         }
         @media (max-width: 480px) {
-          .utility-strip { display: none; }
+          .utility-strip { display: none !important; }
           .nav-logo-name { font-size: 15px; }
         }
       `}</style>
 
       <header className="tt-header">
-        {/* Utility Strip */}
+        {/* Utility Strip — collapses with max-height transition, no layout jump */}
         <div className={`utility-strip${scrolled ? ' hidden' : ''}`}>
-          <div className="container utility-inner">
-            <div className="util-contact">
-              <a href={`tel:${phone}`} className="util-link">
-                <Phone size={13} /> {phone}
-              </a>
-              <a href={`mailto:${email}`} className="util-link">
-                <Mail size={13} /> {email}
-              </a>
-            </div>
-            <div className="util-socials">
-              {settings?.facebookUrl && <a href={settings.facebookUrl} target="_blank" rel="noopener noreferrer" className="util-social"><Facebook size={14} /></a>}
-              {settings?.instagramUrl && <a href={settings.instagramUrl} target="_blank" rel="noopener noreferrer" className="util-social"><Instagram size={14} /></a>}
-              {settings?.linkedinUrl && <a href={settings.linkedinUrl} target="_blank" rel="noopener noreferrer" className="util-social"><Linkedin size={14} /></a>}
-              {settings?.youtubeUrl && <a href={settings.youtubeUrl} target="_blank" rel="noopener noreferrer" className="util-social"><Youtube size={14} /></a>}
+          <div className="utility-strip-inner">
+            <div className="container utility-inner">
+              <div className="util-contact">
+                <a href={`tel:${phone}`} className="util-link">
+                  <Phone size={13} /> {phone}
+                </a>
+                <a href={`mailto:${email}`} className="util-link">
+                  <Mail size={13} /> {email}
+                </a>
+              </div>
+              <div className="util-socials">
+                {settings?.facebookUrl  && <a href={settings.facebookUrl}  target="_blank" rel="noopener noreferrer" className="util-social"><Facebook  size={14} /></a>}
+                {settings?.instagramUrl && <a href={settings.instagramUrl} target="_blank" rel="noopener noreferrer" className="util-social"><Instagram size={14} /></a>}
+                {settings?.linkedinUrl  && <a href={settings.linkedinUrl}  target="_blank" rel="noopener noreferrer" className="util-social"><Linkedin  size={14} /></a>}
+                {settings?.youtubeUrl   && <a href={settings.youtubeUrl}   target="_blank" rel="noopener noreferrer" className="util-social"><Youtube   size={14} /></a>}
+              </div>
             </div>
           </div>
         </div>

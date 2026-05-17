@@ -93,7 +93,7 @@ const SiteSettingsSchema = new mongoose.Schema(
     supportEmailHeadingColor: { type: String, default: '#111111' },
     supportEmailText: {
       type: String,
-      default: 'Send us your queries or service requests, and we'll get back to you.',
+      default: 'Send us your queries or service requests, and we will respond promptly.',
     },
     supportVisitHeading: { type: String, default: 'Visit Our Office' },
     supportVisitHeadingColor: { type: String, default: '#111111' },
