@@ -23,7 +23,10 @@ const IS_PROD = process.env.NODE_ENV === 'production';
 
 // ─── Connect to Database ──────────────────────────────────────────────────────
 // Serverless: mongoose caches the connection across warm invocations
-connectDB();
+// ─── Connect to Database ──────────────────────────────────────────────────────
+(async () => {
+  await connectDB();
+})();
 
 // ─── Express App ─────────────────────────────────────────────────────────────
 const app = express();
