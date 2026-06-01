@@ -6,30 +6,18 @@
       "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "dist"
+        "distDir": "dist",
+        "env": {
+          "VITE_API_URL": "https://tt-solutions-6elqvp5ve-mohammad-aves-projects.vercel.app/api"
+        }
       }
     }
   ],
   "routes": [
-    {
-      "src": "/assets/(.*)",
-      "dest": "/assets/$1"
-    },
-    {
-      "src": "/logo.png",
-      "dest": "/logo.png"
-    },
-    {
-      "src": "/robots.txt",
-      "dest": "/robots.txt"
-    },
-    {
-      "src": "/sitemap.xml",
-      "dest": "/sitemap.xml"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
-    }
+    { "src": "/assets/(.*)", "dest": "/assets/$1" },
+    { "src": "/logo.png", "dest": "/logo.png" },
+    { "src": "/robots.txt", "dest": "/robots.txt" },
+    { "src": "/sitemap.xml", "dest": "/sitemap.xml" },
+    { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
