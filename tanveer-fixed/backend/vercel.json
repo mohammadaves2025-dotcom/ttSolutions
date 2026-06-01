@@ -1,14 +1,16 @@
 {
   "version": 2,
   "name": "tt-solutions",
-  "functions": {
-    "api/index.js": {
-      "includeFiles": "**/*.js"
+  "builds": [
+    {
+      "src": "api/index.js",
+      "use": "@vercel/node"
     }
-  },
-  "rewrites": [
-    { "source": "/(.*)",
-     "destination": "/api/index.js" 
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/api/index.js"
     }
   ]
 }
