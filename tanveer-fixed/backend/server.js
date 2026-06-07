@@ -30,6 +30,10 @@ const IS_PROD = process.env.NODE_ENV === 'production';
 
 // ─── Express App ─────────────────────────────────────────────────────────────
 const app = express();
+app.set('trust proxy', 1);
+
+console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('Mongo URI configured:', !!process.env.MONGODB_URI);
 
 // ─── Security ─────────────────────────────────────────────────────────────────
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
