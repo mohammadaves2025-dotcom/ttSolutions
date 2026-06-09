@@ -22,18 +22,35 @@ router.post(
 
     // Bootstrap default admin if no users exist.
     // Uses new User().save() so the pre('save') bcrypt hook runs and hashes the password.
-    // findOneAndUpdate/$setOnInsert bypasses mongoose hooks — do NOT use it here.
     const userCount = await User.countDocuments();
+    console.log(`[auth/login] userCount=${userCount}`);
+
     if (userCount === 0) {
       const defaultUsername = (process.env.ADMIN_USERNAME || 'admin').toLowerCase();
       const defaultPassword = process.env.ADMIN_PASSWORD || 'ChangeMe123!';
-      const adminUser = new User({ username: defaultUsername, password: defaultPassword });
-      await adminUser.save();
-      console.log('🔐  Default admin user created with hashed password.');
+      console.log(`[auth/login] Bootstrapping admin user: username="${defaultUsername}", passwordLength=${defaultPassword.length}`);
+      try {
+        const adminUser = new User({ username: defaultUsername, password: defaultPassword });
+        await adminUser.save();
+        console.log('[auth/login] ✅ Default admin user created successfully.');
+      } catch (bootstrapErr) {
+        console.error('[auth/login] ❌ Bootstrap FAILED:', bootstrapErr.message, bootstrapErr);
+        // Still attempt login — don't block if bootstrap fails (e.g. duplicate key race)
+      }
     }
 
-    const user = await User.findOne({ username: username.toLowerCase().trim() });
-    if (!user || !(await user.comparePassword(password))) {
+    const lookupUsername = username.toLowerCase().trim();
+    const user = await User.findOne({ username: lookupUsername });
+    console.log(`[auth/login] Looking up user "${lookupUsername}": found=${!!user}`);
+
+    if (!user) {
+      return res.status(401).json({ success: false, message: 'Invalid credentials' });
+    }
+
+    const passwordMatch = await user.comparePassword(password);
+    console.log(`[auth/login] Password match: ${passwordMatch}`);
+
+    if (!passwordMatch) {
       return res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
 
@@ -88,6 +105,35 @@ router.put(
     await user.save();
 
     res.json({ success: true, message: 'Password updated successfully' });
+  })
+);
+
+/**
+ * @route  POST /api/auth/reset-admin
+ * @access Public (REMOVE AFTER USE — only works when no users exist OR with env var guard)
+ * @desc   Emergency: delete all users and re-create admin from env vars.
+ *         Only works if ADMIN_RESET_SECRET env var matches the request body secret.
+ */
+router.post(
+  '/reset-admin',
+  asyncHandler(async (req, res) => {
+    const { secret } = req.body;
+    const resetSecret = process.env.ADMIN_RESET_SECRET;
+
+    if (!resetSecret || secret !== resetSecret) {
+      return res.status(403).json({ success: false, message: 'Forbidden' });
+    }
+
+    await User.deleteMany({});
+    console.log('[reset-admin] Deleted all users.');
+
+    const defaultUsername = (process.env.ADMIN_USERNAME || 'admin').toLowerCase();
+    const defaultPassword = process.env.ADMIN_PASSWORD || 'ChangeMe123!';
+    const adminUser = new User({ username: defaultUsername, password: defaultPassword });
+    await adminUser.save();
+    console.log(`[reset-admin] ✅ Admin re-created: username="${defaultUsername}"`);
+
+    res.json({ success: true, message: `Admin user "${defaultUsername}" re-created.` });
   })
 );
 
