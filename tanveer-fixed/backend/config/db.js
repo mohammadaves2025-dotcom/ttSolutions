@@ -15,28 +15,28 @@ const connectDB = async () => {
   }
 
   try {
-
-    console.log('MONGODB_URI exists:', !!process.env.MONGODB_URI);
-    console.log('MONGODB_URI starts with:', process.env.MONGODB_URI?.substring(0, 50));
+    console.log('MongoDB: attempting connection...');
 
     const conn = await mongoose.connect(uri, {
-      // These options are recommended for serverless (Vercel) environments
-      bufferCommands: false,
+      // bufferCommands: true (default) — allows Mongoose to queue operations
+      // while the connection is being established. Setting it to false was
+      // causing "Cannot call X before initial connection" errors on Vercel
+      // because the serverless function sometimes routes a request before
+      // the async connectDB() promise resolves.
+      bufferCommands: true,
       maxPoolSize: 10,
-      serverSelectionTimeoutMS: 5000,
+      serverSelectionTimeoutMS: 10000,
       socketTimeoutMS: 45000,
     });
 
     isConnected = true;
     console.log(`MongoDB connected: ${conn.connection.host}`);
   } catch (error) {
-    console.error('========== MONGODB ERROR ==========');
-    console.error(error);
-    console.error('Name:', error.name);
+    console.error('========== MONGODB CONNECTION ERROR ==========');
     console.error('Message:', error.message);
-    console.error('Cause:', error.cause);
-    console.error('===================================');
-
+    console.error('==============================================');
+    // Re-throw so the caller (server.js) can log it.
+    // isConnected stays false so the next request retries.
     throw error;
   }
 };

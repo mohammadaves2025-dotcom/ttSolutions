@@ -21,19 +21,26 @@ import seedRoutes from './routes/seed.js';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const IS_PROD = process.env.NODE_ENV === 'production';
 
-// ─── Connect to Database ──────────────────────────────────────────────────────
-// Serverless: mongoose caches the connection across warm invocations
-// ─── Connect to Database ──────────────────────────────────────────────────────
-(async () => {
-  await connectDB();
-})();
-
 // ─── Express App ─────────────────────────────────────────────────────────────
 const app = express();
+
+// MUST be first — Vercel sits behind a proxy and sets X-Forwarded-For.
+// express-rate-limit reads this header and throws ERR_ERL_UNEXPECTED_X_FORWARDED_FOR
+// if trust proxy is not set before the rate limiter middleware runs.
 app.set('trust proxy', 1);
 
 console.log('NODE_ENV:', process.env.NODE_ENV);
 console.log('Mongo URI configured:', !!process.env.MONGODB_URI);
+
+// ─── Connect to Database ──────────────────────────────────────────────────────
+// connectDB is called here — after app is created but before any request handler.
+// In serverless, each cold start re-runs this; the isConnected guard in db.js
+// makes it a no-op on warm invocations.
+connectDB().catch((err) => {
+  console.error('Initial DB connection failed:', err.message);
+  // Do NOT crash the process — let routes return 503 individually so
+  // health checks and static routes still respond.
+});
 
 // ─── Security ─────────────────────────────────────────────────────────────────
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
@@ -49,7 +56,6 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: (origin, cb) => {
-      // Allow Vercel preview deployments automatically (*.vercel.app)
       if (!origin) return cb(null, true);
       if (allowedOrigins.includes(origin)) return cb(null, true);
       if (origin.endsWith('.vercel.app')) return cb(null, true);
@@ -60,9 +66,8 @@ app.use(
 );
 
 // ─── Rate Limiting ────────────────────────────────────────────────────────────
-// NOTE: Vercel serverless functions are stateless — rate limit state resets
-// on every cold start. For production rate limiting use Upstash Redis.
-// For this low-traffic B2B site, in-memory limiting is acceptable.
+// trust proxy is already set above, so express-rate-limit will correctly
+// read the real client IP from X-Forwarded-For without throwing.
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 200,
@@ -73,7 +78,7 @@ const apiLimiter = rateLimit({
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: 20,
   standardHeaders: true,
   legacyHeaders: false,
   message: { success: false, message: 'Too many login attempts — please try again later' },
@@ -87,13 +92,9 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // ─── Logging ──────────────────────────────────────────────────────────────────
-// Use 'dev' in all envs for Vercel — 'combined' writes too much to function logs
 app.use(morgan('dev'));
 
 // ─── Static Uploads ───────────────────────────────────────────────────────────
-// NOTE: Vercel serverless has no persistent filesystem — uploaded images are
-// lost on redeploy. For production, wire up Cloudinary or S3.
-// For now, serve from /tmp which persists within a warm invocation.
 app.use('/uploads', express.static(path.join('/tmp', 'uploads')));
 
 // ─── Health Check ─────────────────────────────────────────────────────────────
@@ -133,8 +134,6 @@ app.use((_req, res) => res.status(404).json({ success: false, message: 'Route no
 app.use(globalErrorHandler);
 
 // ─── Local Dev Only ───────────────────────────────────────────────────────────
-// Vercel does NOT call app.listen() — it imports the app directly via api/index.js
-// This block only runs when you do `node server.js` locally
 if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
   const PORT = process.env.PORT || 5000;
   app.listen(PORT, () => {
