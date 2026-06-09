@@ -20,18 +20,16 @@ router.post(
       return res.status(400).json({ success: false, message: 'Username and password are required' });
     }
 
-    // FIX: Bootstrap default admin only if no users exist — wrapped in a lock-safe upsert pattern
-    // to prevent race conditions on concurrent first-boot requests
+    // Bootstrap default admin if no users exist.
+    // Uses new User().save() so the pre('save') bcrypt hook runs and hashes the password.
+    // findOneAndUpdate/$setOnInsert bypasses mongoose hooks — do NOT use it here.
     const userCount = await User.countDocuments();
     if (userCount === 0) {
       const defaultUsername = (process.env.ADMIN_USERNAME || 'admin').toLowerCase();
       const defaultPassword = process.env.ADMIN_PASSWORD || 'ChangeMe123!';
-      await User.findOneAndUpdate(
-        { username: defaultUsername },
-        { $setOnInsert: { username: defaultUsername, password: defaultPassword } },
-        { upsert: true, new: true }
-      );
-      console.log('🔐  Default admin user created — change the password immediately.');
+      const adminUser = new User({ username: defaultUsername, password: defaultPassword });
+      await adminUser.save();
+      console.log('🔐  Default admin user created with hashed password.');
     }
 
     const user = await User.findOne({ username: username.toLowerCase().trim() });
