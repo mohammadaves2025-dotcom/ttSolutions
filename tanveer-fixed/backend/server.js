@@ -9,6 +9,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 import connectDB from './config/db.js';
+import ensureDB from './middleware/ensureDB.js';
 import { globalErrorHandler } from './middleware/errorHandler.js';
 
 import authRoutes from './routes/auth.js';
@@ -24,16 +25,16 @@ const IS_PROD = process.env.NODE_ENV === 'production';
 // ─── Express App ─────────────────────────────────────────────────────────────
 const app = express();
 
-// MUST be first — Vercel sits behind a proxy and sets X-Forwarded-For.
+// MUST be first — Vercel sits behind a proxy
 app.set('trust proxy', 1);
 
 console.log('NODE_ENV:', process.env.NODE_ENV);
 console.log('MONGODB_URI defined:', !!process.env.MONGODB_URI);
 console.log('MONGODB_URI prefix:', process.env.MONGODB_URI?.substring(0, 40));
 
-// ─── Connect to Database ──────────────────────────────────────────────────────
+// Kick off DB connection in background (warms up on cold start)
 connectDB().catch((err) => {
-  console.error('Initial DB connection failed:', err.message);
+  console.error('Background connectDB failed:', err.message);
 });
 
 // ─── Security ─────────────────────────────────────────────────────────────────
@@ -108,15 +109,15 @@ app.get('/health', async (_req, res) => {
   });
 });
 
-// ─── API Routes ───────────────────────────────────────────────────────────────
-app.use('/api/auth', authRoutes);
-app.use('/api/products', productRoutes);
-app.use('/api/blogs', blogRoutes);
-app.use('/api/settings', settingsRoutes);
-app.use('/api/upload', uploadRoutes);
+// ─── API Routes (all require DB) ──────────────────────────────────────────────
+app.use('/api/auth', ensureDB, authRoutes);
+app.use('/api/products', ensureDB, productRoutes);
+app.use('/api/blogs', ensureDB, blogRoutes);
+app.use('/api/settings', ensureDB, settingsRoutes);
+app.use('/api/upload', ensureDB, uploadRoutes);
 
 if (!IS_PROD) {
-  app.use('/api/seed', seedRoutes);
+  app.use('/api/seed', ensureDB, seedRoutes);
 } else {
   app.use('/api/seed', (_req, res) =>
     res.status(403).json({ success: false, message: 'Seed endpoint is disabled in production' })

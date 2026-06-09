@@ -1,10 +1,16 @@
 import mongoose from 'mongoose';
 
-let isConnected = false;
-
 const connectDB = async () => {
-  if (isConnected) {
+  // If already connected, reuse the connection (serverless warm instance optimization)
+  if (mongoose.connection.readyState === 1) {
     console.log('MongoDB: reusing existing connection');
+    return;
+  }
+
+  // If currently connecting, wait for it
+  if (mongoose.connection.readyState === 2) {
+    console.log('MongoDB: connection in progress, waiting...');
+    await new Promise((resolve) => mongoose.connection.once('connected', resolve));
     return;
   }
 
@@ -14,29 +20,21 @@ const connectDB = async () => {
     throw new Error('MONGODB_URI environment variable is not defined');
   }
 
-  try {
-    console.log('MongoDB: attempting connection...');
+  console.log('MongoDB: initiating new connection...');
+  console.log('MongoDB: URI type:', uri.startsWith('mongodb+srv') ? 'SRV' : 'Standard');
 
-    const conn = await mongoose.connect(uri, {
-      // bufferCommands: true (default) — allows Mongoose to queue operations
-      // while the connection is being established. Setting it to false was
-      // causing "Cannot call X before initial connection" errors on Vercel
-      // because the serverless function sometimes routes a request before
-      // the async connectDB() promise resolves.
+  try {
+    await mongoose.connect(uri, {
       bufferCommands: true,
-      maxPoolSize: 10,
-      serverSelectionTimeoutMS: 10000,
+      maxPoolSize: 5,
+      serverSelectionTimeoutMS: 15000,
+      connectTimeoutMS: 15000,
       socketTimeoutMS: 45000,
     });
-
-    isConnected = true;
-    console.log(`MongoDB connected: ${conn.connection.host}`);
+    console.log(`MongoDB: connected to ${mongoose.connection.host}`);
   } catch (error) {
-    console.error('========== MONGODB CONNECTION ERROR ==========');
-    console.error('Message:', error.message);
-    console.error('==============================================');
-    // Re-throw so the caller (server.js) can log it.
-    // isConnected stays false so the next request retries.
+    console.error('MongoDB: connection FAILED:', error.message);
+    // Do NOT cache the failure — next request should retry
     throw error;
   }
 };
