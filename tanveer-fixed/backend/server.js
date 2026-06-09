@@ -25,21 +25,15 @@ const IS_PROD = process.env.NODE_ENV === 'production';
 const app = express();
 
 // MUST be first — Vercel sits behind a proxy and sets X-Forwarded-For.
-// express-rate-limit reads this header and throws ERR_ERL_UNEXPECTED_X_FORWARDED_FOR
-// if trust proxy is not set before the rate limiter middleware runs.
 app.set('trust proxy', 1);
 
 console.log('NODE_ENV:', process.env.NODE_ENV);
-console.log('Mongo URI configured:', !!process.env.MONGODB_URI);
+console.log('MONGODB_URI defined:', !!process.env.MONGODB_URI);
+console.log('MONGODB_URI prefix:', process.env.MONGODB_URI?.substring(0, 40));
 
 // ─── Connect to Database ──────────────────────────────────────────────────────
-// connectDB is called here — after app is created but before any request handler.
-// In serverless, each cold start re-runs this; the isConnected guard in db.js
-// makes it a no-op on warm invocations.
 connectDB().catch((err) => {
   console.error('Initial DB connection failed:', err.message);
-  // Do NOT crash the process — let routes return 503 individually so
-  // health checks and static routes still respond.
 });
 
 // ─── Security ─────────────────────────────────────────────────────────────────
@@ -66,8 +60,6 @@ app.use(
 );
 
 // ─── Rate Limiting ────────────────────────────────────────────────────────────
-// trust proxy is already set above, so express-rate-limit will correctly
-// read the real client IP from X-Forwarded-For without throwing.
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 200,
@@ -104,9 +96,13 @@ app.get('/', (_req, res) =>
 
 app.get('/health', async (_req, res) => {
   const { readyState } = mongoose.connection;
+  const states = { 0: 'disconnected', 1: 'connected', 2: 'connecting', 3: 'disconnecting' };
   res.json({
     status: 'ok',
-    db: readyState === 1 ? 'connected' : 'disconnected',
+    db: states[readyState] || 'unknown',
+    dbState: readyState,
+    uriDefined: !!process.env.MONGODB_URI,
+    uriPrefix: process.env.MONGODB_URI?.substring(0, 40),
     uptime: process.uptime(),
     timestamp: new Date().toISOString(),
   });

@@ -6,10 +6,7 @@
       "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "dist",
-        "env": {
-          "VITE_API_URL": "https://tt-solutions-6elqvp5ve-mohammad-aves-projects.vercel.app/api"
-        }
+        "distDir": "dist"
       }
     }
   ],
