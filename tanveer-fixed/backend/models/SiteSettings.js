@@ -22,7 +22,23 @@ const SiteSettingsSchema = new mongoose.Schema(
     youtubeUrl: String,
 
     // Carousel
-    carouselImages: { type: [String], default: [] },
+    // FIX: was `[String]` — just an image URL. Admin-added slides had no
+    // way to set a headline/subtitle/CTA, so they rendered as a bare photo
+    // with nothing on it (Carousel.jsx only shows text when slide.title
+    // is truthy). Upgraded to structured objects so admin slides match
+    // the built-in ones.
+    carouselImages: {
+      type: [
+        {
+          image: { type: String, required: true },
+          title: { type: String, default: '' },
+          subtitle: { type: String, default: '' },
+          ctaLabel: { type: String, default: 'Explore' },
+          ctaLink: { type: String, default: '/products' },
+        },
+      ],
+      default: [],
+    },
 
     // CMS — General
     homePageTitle: { type: String, default: 'Our Best Sellers' },

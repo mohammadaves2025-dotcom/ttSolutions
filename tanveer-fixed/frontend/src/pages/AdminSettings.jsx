@@ -12,6 +12,8 @@ const DEFAULT_FOOTER_LINKS = [
     { label: 'Products on GeM', url: '/select-brand/products-on-gem' }
 ];
 
+const EMPTY_SLIDE = { image: '', title: '', subtitle: '', ctaLabel: 'Explore', ctaLink: '/products' };
+
 const AdminSettings = () => {
     const { settings, updateSettings } = useData();
     const [formData, setFormData] = useState({
@@ -25,7 +27,6 @@ const AdminSettings = () => {
         instagramUrl: '',
         linkedinUrl: '',
         youtubeUrl: '',
-        carouselImages: '',
         homePageTitle: '',
         brandSelectionTitle: '',
         aboutUsText: '',
@@ -33,6 +34,7 @@ const AdminSettings = () => {
         footerText: ''
     });
     const [footerLinks, setFooterLinks] = useState(DEFAULT_FOOTER_LINKS);
+    const [carouselSlides, setCarouselSlides] = useState([{ ...EMPTY_SLIDE }]);
 
     useEffect(() => {
         if (settings) {
@@ -47,7 +49,6 @@ const AdminSettings = () => {
                 instagramUrl: settings.instagramUrl || '',
                 linkedinUrl: settings.linkedinUrl || '',
                 youtubeUrl: settings.youtubeUrl || '',
-                carouselImages: settings.carouselImages ? settings.carouselImages.join('\n') : '',
                 homePageTitle: settings.homePageTitle || '',
                 brandSelectionTitle: settings.brandSelectionTitle || '',
                 aboutUsText: settings.aboutUsText || '',
@@ -56,6 +57,17 @@ const AdminSettings = () => {
             });
             if (settings.footerLinks && settings.footerLinks.length > 0) {
                 setFooterLinks(settings.footerLinks);
+            }
+            if (settings.carouselImages && settings.carouselImages.length > 0) {
+                // Backward-compat: older data may just be an array of URL strings
+                // (from before slides had title/subtitle/CTA fields). Normalize
+                // those into the new object shape so the form doesn't break.
+                const normalized = settings.carouselImages.map((slide) =>
+                    typeof slide === 'string'
+                        ? { ...EMPTY_SLIDE, image: slide }
+                        : { ...EMPTY_SLIDE, ...slide }
+                );
+                setCarouselSlides(normalized);
             }
         }
     }, [settings]);
@@ -77,12 +89,34 @@ const AdminSettings = () => {
         setFooterLinks(prev => prev.filter((_, i) => i !== index));
     };
 
+    const handleSlideChange = (index, field, value) => {
+        setCarouselSlides(prev => prev.map((slide, i) => i === index ? { ...slide, [field]: value } : slide));
+    };
+
+    const addSlide = () => {
+        setCarouselSlides(prev => [...prev, { ...EMPTY_SLIDE }]);
+    };
+
+    const removeSlide = (index) => {
+        setCarouselSlides(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const moveSlide = (index, direction) => {
+        setCarouselSlides(prev => {
+            const next = [...prev];
+            const target = index + direction;
+            if (target < 0 || target >= next.length) return prev;
+            [next[index], next[target]] = [next[target], next[index]];
+            return next;
+        });
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             const dataToSave = {
                 ...formData,
-                carouselImages: formData.carouselImages.split('\n').map(s => s.trim()).filter(Boolean),
+                carouselImages: carouselSlides.filter(s => s.image.trim()),
                 footerLinks: footerLinks.filter(l => l.label.trim())
             };
             await updateSettings(dataToSave);
@@ -227,17 +261,111 @@ const AdminSettings = () => {
 
                     {/* ── Home Page Slider ── */}
                     <h3>Home Page Slider (Carousel)</h3>
-                    <div className="form-group">
-                        <label>Image URLs (One per line)</label>
-                        <textarea
-                            name="carouselImages"
-                            rows="5"
-                            placeholder="https://example.com/image1.jpg&#10;https://example.com/image2.jpg"
-                            value={formData.carouselImages}
-                            onChange={(e) => setFormData({ ...formData, carouselImages: e.target.value })}
-                        />
-                        <p style={{ fontSize: '0.8em', color: '#666' }}>Enter direct image links. Leave empty to use default banner.</p>
-                    </div>
+                    <p style={{ fontSize: '0.85em', color: '#666', marginBottom: '15px' }}>
+                        Each slide needs an image plus a headline — slides with no headline show up as a bare photo with no text on the site, so fill in at least the headline for every slide you add. Leave all slides empty to fall back to the default banner images.
+                    </p>
+
+                    {carouselSlides.map((slide, index) => (
+                        <div
+                            key={index}
+                            style={{
+                                border: '1px solid #ddd',
+                                borderRadius: '6px',
+                                padding: '16px',
+                                marginBottom: '16px',
+                                background: '#fafafa'
+                            }}
+                        >
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                                <strong>Slide {index + 1}</strong>
+                                <div style={{ display: 'flex', gap: '8px' }}>
+                                    <button
+                                        type="button"
+                                        onClick={() => moveSlide(index, -1)}
+                                        disabled={index === 0}
+                                        style={{ background: '#eee', border: 'none', borderRadius: '4px', padding: '6px 10px', cursor: index === 0 ? 'not-allowed' : 'pointer' }}
+                                    >
+                                        ↑
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => moveSlide(index, 1)}
+                                        disabled={index === carouselSlides.length - 1}
+                                        style={{ background: '#eee', border: 'none', borderRadius: '4px', padding: '6px 10px', cursor: index === carouselSlides.length - 1 ? 'not-allowed' : 'pointer' }}
+                                    >
+                                        ↓
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => removeSlide(index)}
+                                        style={{ background: '#e74c3c', color: 'white', border: 'none', borderRadius: '4px', padding: '6px 12px', cursor: 'pointer' }}
+                                    >
+                                        ✕ Remove Slide
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="form-group">
+                                <label>Slide Image</label>
+                                <ImageUpload
+                                    label="Upload Slide Image"
+                                    onUpload={(url) => handleSlideChange(index, 'image', url)}
+                                    existingImage={slide.image}
+                                />
+                                <input
+                                    value={slide.image}
+                                    onChange={(e) => handleSlideChange(index, 'image', e.target.value)}
+                                    placeholder="Or enter image URL manually"
+                                    style={{ marginTop: '10px' }}
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label>Headline</label>
+                                <input
+                                    value={slide.title}
+                                    onChange={(e) => handleSlideChange(index, 'title', e.target.value)}
+                                    placeholder="e.g. Heavy-Duty Efficiency"
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label>Subtitle</label>
+                                <input
+                                    value={slide.subtitle}
+                                    onChange={(e) => handleSlideChange(index, 'subtitle', e.target.value)}
+                                    placeholder="e.g. Engineered for continuous operation and maximum durability"
+                                />
+                            </div>
+
+                            <div style={{ display: 'flex', gap: '10px' }}>
+                                <div className="form-group" style={{ flex: 1 }}>
+                                    <label>Button Text</label>
+                                    <input
+                                        value={slide.ctaLabel}
+                                        onChange={(e) => handleSlideChange(index, 'ctaLabel', e.target.value)}
+                                        placeholder="View Range"
+                                    />
+                                </div>
+                                <div className="form-group" style={{ flex: 1 }}>
+                                    <label>Button Link</label>
+                                    <input
+                                        value={slide.ctaLink}
+                                        onChange={(e) => handleSlideChange(index, 'ctaLink', e.target.value)}
+                                        placeholder="/products"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+
+                    <button
+                        type="button"
+                        onClick={addSlide}
+                        style={{ background: '#27ae60', color: 'white', border: 'none', borderRadius: '4px', padding: '8px 16px', cursor: 'pointer', marginTop: '5px', marginBottom: '20px' }}
+                    >
+                        + Add Slide
+                    </button>
 
                     {/* ── Content Management ── */}
                     <h3>Content Management</h3>
