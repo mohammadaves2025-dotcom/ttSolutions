@@ -20,8 +20,23 @@ const Navbar = () => {
   const companyName = settings?.companyName || 'T&T Office Solutions';
 
   useEffect(() => {
-    // Use passive listener for scroll performance
-    const onScroll = () => setScrolled(window.scrollY > 30);
+    // FIX: the old version used a single threshold (scrollY > 30) with no
+    // buffer. Trackpad/mouse-wheel scrolling jitters by a few px even during
+    // a single "smooth" scroll, so scrollY kept crossing 30 back and forth —
+    // that's what was making the utility strip collapse/expand repeatedly
+    // ("dancing"). Two fixes: hysteresis (different on/off thresholds so a
+    // few px of jitter can't flip it), and rAF-throttling so we only check
+    // once per frame instead of on every scroll event.
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(() => {
+        const y = window.scrollY;
+        setScrolled(prev => (prev ? y > 20 : y > 60));
+        ticking = false;
+      });
+    };
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);

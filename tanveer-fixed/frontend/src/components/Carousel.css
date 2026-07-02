@@ -1,3 +1,4 @@
+
 .premium-carousel {
   position: relative; width: 100%; overflow: hidden;
   aspect-ratio: 16/6.5; min-height: 380px; max-height: 680px;
@@ -82,46 +83,149 @@
 @keyframes progress { from{width:0%} to{width:100%} }
 
 /* ───────────────────────────────────────────────────────────────
-   Mobile hero — 90dvh with a "peek" of the next section.
-   Not exact 100vh on purpose: a full-bleed hero with nothing
-   showing below it reads as a dead end. Leaving ~10% of the
-   next section (the stats strip) visible signals "scroll for
-   more" without needing an explicit affordance/arrow.
-   dvh (dynamic viewport height) avoids the resize jump that
-   plain vh causes on mobile Safari/Chrome when the address bar
-   shows/hides during scroll.
+   Mobile hero — "bottom sheet" pattern.
+
+   The old mobile hero reused the desktop treatment: full-image dark
+   wash + centered text on top of the photo. That's why it read as
+   generic/template — the product photo and the headline were fighting
+   for the same pixels, so the overlay had to be heavy enough to keep
+   text legible, which in turn buried the actual product.
+
+   This version lets the photo stay clear (light gradient only, mostly
+   for polish) and moves all text into a solid card that overlaps the
+   bottom of the image — the pattern travel/marketplace apps use so
+   the photo and the copy each get their own space instead of sharing one.
    ─────────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
   .premium-carousel {
     aspect-ratio: unset;
     height: 90vh;   /* fallback for browsers without dvh support */
     height: 90dvh;
-    min-height: 520px;
+    min-height: 580px;
     max-height: 780px;
   }
 
-  .carousel-content-inner {
-    padding: 0 28px;
-    max-width: 440px;
-    margin: 0 auto;
-    text-align: center;
-  }
-  .carousel-label { justify-content: center; }
-  .carousel-title { font-size: clamp(28px, 8vw, 40px); margin-bottom: 14px; }
-  .carousel-subtitle { margin-left: auto; margin-right: auto; margin-bottom: 32px; }
-  .carousel-actions { justify-content: center; }
+  .carousel-bg img { object-position: center 38%; }
 
-  /* Keep a single primary CTA on mobile — two competing buttons
-     in a tall, narrow, centered layout reads indecisive. */
-  .carousel-actions .carousel-cta-secondary { display: none; }
+  /* Light top tint for brand feel + a bottom fade that blends the photo
+     into the card's color — not a wash across the whole image anymore. */
+  .carousel-overlay {
+    background: linear-gradient(
+      180deg,
+      rgba(6,90,50,0.18) 0%,
+      rgba(6,90,50,0) 22%,
+      rgba(6,90,50,0) 56%,
+      rgba(6,90,50,0.5) 80%,
+      var(--emerald-deep) 100%
+    );
+  }
+
+  .carousel-content { align-items: flex-end; }
+
+  .carousel-content-inner {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 28px 24px calc(26px + env(safe-area-inset-bottom));
+    text-align: left;
+    background: linear-gradient(160deg, var(--emerald) 0%, var(--emerald-deep) 100%);
+    border-radius: 26px 26px 0 0;
+    box-shadow: 0 -18px 44px rgba(0,0,0,0.28);
+    animation: sheetUp 0.55s cubic-bezier(0.16,1,0.3,1) both;
+  }
+  @keyframes sheetUp {
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .carousel-label {
+    justify-content: flex-start;
+    color: rgba(255,255,255,0.65);
+    margin-bottom: 10px;
+  }
+  .carousel-label::before { background: rgba(255,255,255,0.7); }
+
+  .carousel-title {
+    font-size: clamp(24px, 7vw, 32px);
+    margin-bottom: 8px;
+    text-shadow: none; /* not needed on a solid card */
+  }
+  .carousel-subtitle {
+    text-align: left;
+    margin: 0 0 22px;
+    max-width: none;
+  }
+
+  .carousel-actions { justify-content: flex-start; gap: 18px; align-items: center; }
+
+  /* Primary CTA — solid white so it pops off the emerald card instead
+     of the desktop ghost-button treatment, which would nearly disappear
+     against a same-color background. Scoped to the carousel card only,
+     so the shared .btn-ghost class elsewhere on the site is untouched. */
+  .carousel-content-inner .btn-ghost {
+    background: #fff;
+    color: var(--emerald-deep);
+    border-color: #fff;
+    font-weight: 700;
+  }
+
+  /* Secondary CTA — brought back as an understated text link rather than
+     a second competing button (the earlier "hide it" fix was solving the
+     right problem — two loud buttons in a tight card looks indecisive —
+     but a de-emphasized text link still offers the second action for free.
+     !important is needed here because the button's second-CTA look is
+     currently set via inline style in Carousel.jsx, which otherwise wins
+     over a plain class rule regardless of media query. */
+  .carousel-cta-secondary {
+    display: inline-flex !important;
+    background: transparent !important;
+    border: none !important;
+    backdrop-filter: none !important;
+    box-shadow: none !important;
+    color: rgba(255,255,255,0.8) !important;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    padding: 13px 2px !important;
+  }
 
   /* Arrows are a desktop-mouse affordance; on mobile people swipe. */
   .carousel-arrow { display: none; }
 
-  .carousel-dots { bottom: 28px; }
+  /* Segmented progress bar (Instagram-story style) replacing dots —
+     sits above the photo, independent of the bottom-sheet card. */
+  .carousel-dots {
+    top: calc(env(safe-area-inset-top) + 14px);
+    bottom: auto;
+    left: 20px; right: 20px;
+    transform: none;
+    width: auto;
+    gap: 6px;
+  }
+  .carousel-dot {
+    flex: 1;
+    height: 3px !important;
+    width: auto !important;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.3);
+    position: relative;
+    overflow: hidden;
+  }
+  .carousel-dot.passed { background: rgba(255,255,255,0.9); }
+  .carousel-dot.active { background: rgba(255,255,255,0.3); }
+  .carousel-dot.active::after {
+    content: '';
+    position: absolute; left: 0; top: 0; bottom: 0; width: 0;
+    background: #fff;
+    animation: segFill 5.5s linear forwards;
+  }
+  @keyframes segFill { to { width: 100%; } }
 
-  /* Tap feedback — mobile has no :hover, so give the primary CTA
-     its own pressed state instead of relying on the desktop hover rule. */
+  /* The old thin bottom progress bar is redundant now that the segmented
+     bar up top does this job. */
+  .carousel-progress { display: none; }
+
+  /* Tap feedback — mobile has no :hover, so give the CTAs their own
+     pressed state instead of relying on the desktop hover rule. */
   .carousel-actions a, .carousel-actions button {
     transition: transform 0.12s ease;
   }
