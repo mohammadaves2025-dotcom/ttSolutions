@@ -234,3 +234,41 @@ img {
     transition: none;
   }
 }
+
+/* ─────────────────────────────────────────────────────────────────────────
+   MOBILE-ONLY additions. Everything below is scoped to max-width: 640px,
+   so none of it changes desktop rendering — desktop stays exactly as-is.
+   ───────────────────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  /* Room at the bottom of every page so the fixed Call/WhatsApp dock
+     (added in EnquiryButton.jsx) never covers the footer or last section. */
+  body { padding-bottom: 68px; }
+
+  /* Remove the gray flash Android/iOS Chrome shows on tap — feels more
+     like a native app when paired with the :active tap-scale below. */
+  a, button {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Reusable tap-feedback: apply .tap-scale to any card/button that needs
+     a native-app "press" feel instead of relying on :hover (which mobile
+     doesn't have). */
+  .tap-scale { transition: transform 0.12s ease; }
+  .tap-scale:active { transform: scale(0.96); }
+
+  /* Reusable horizontal scroll-snap row: apply to a flex container to turn
+     a grid of cards into a swipeable row (see products-grid in Home.jsx). */
+  .scroll-row {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 16px;
+  }
+  .scroll-row::-webkit-scrollbar { display: none; }
+  .scroll-row > * {
+    scroll-snap-align: start;
+    flex: 0 0 78%;
+  }
+}

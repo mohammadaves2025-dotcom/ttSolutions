@@ -1,4 +1,3 @@
-
 .premium-carousel {
   position: relative; width: 100%; overflow: hidden;
   aspect-ratio: 16/6.5; min-height: 380px; max-height: 680px;
@@ -120,4 +119,13 @@
   .carousel-arrow { display: none; }
 
   .carousel-dots { bottom: 28px; }
+
+  /* Tap feedback — mobile has no :hover, so give the primary CTA
+     its own pressed state instead of relying on the desktop hover rule. */
+  .carousel-actions a, .carousel-actions button {
+    transition: transform 0.12s ease;
+  }
+  .carousel-actions a:active, .carousel-actions button:active {
+    transform: scale(0.96);
+  }
 }

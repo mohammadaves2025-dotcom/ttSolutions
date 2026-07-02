@@ -199,5 +199,61 @@
 @media (max-width: 480px) {
     .product-grid {
         grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    /* ─── Horizontal list-row card (Amazon/Flipkart mobile pattern) ───
+       A single stacked column of tall cards is slow to scan on a phone.
+       Turning each card into a compact row lets a buyer scan far more
+       products per scroll, which is what they're used to from shopping apps. */
+    .product-card {
+        flex-direction: row;
+        align-items: stretch;
+        padding: 12px;
+        gap: 12px;
+        transition: transform 0.12s ease;
+    }
+    .product-card:active { transform: scale(0.98); }
+    .product-card:hover { box-shadow: none; } /* no hover on touch */
+
+    .card-top-section {
+        flex: 0 0 96px;
+        width: 96px;
+        padding-bottom: 0;
+        border-bottom: none;
+        margin-bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .card-image-wrapper {
+        height: 96px;
+        margin-top: 0;
+    }
+    .side-brand-vertical { display: none; } /* decorative, crowds the compact row */
+    .discount-badge { font-size: 11px; padding: 3px 6px; }
+    .stock-badge { margin-top: 6px; font-size: 11px; }
+
+    .card-bottom-section {
+        flex: 1;
+        min-width: 0;
+        justify-content: center;
+    }
+    .product-card-title {
+        font-size: 14px;
+        margin-bottom: 6px;
+        -webkit-line-clamp: 2;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .product-price-box { margin-bottom: 10px; }
+    .product-price-box .rupee, .product-price-box .amount { font-size: 18px; }
+    .product-actions { flex-direction: row; }
+    .btn-view-details {
+        padding: 8px;
+        font-size: 12.5px;
+        width: auto;
+        flex: 1;
     }
 }

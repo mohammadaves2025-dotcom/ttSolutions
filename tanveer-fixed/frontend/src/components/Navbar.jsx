@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useData } from '../context/DataContext';
-import { Menu, X, Phone, Mail, ChevronDown, Facebook, Twitter, Instagram, Linkedin, Youtube } from 'lucide-react';
+import { Menu, X, Phone, Mail, ChevronDown, Facebook, Twitter, Instagram, Linkedin, Youtube, Home as HomeIcon, Package, BookOpen, LifeBuoy, Users, Send } from 'lucide-react';
 import logo from '../assets/logo.png';
 import './Navbar.css';
 
@@ -39,6 +39,22 @@ const Navbar = () => {
     setProductsOpen(false);
     setMobileProductsOpen(false);
   }, [location]);
+
+  // Lock body scroll while the mobile drawer is open. Only ever fires
+  // when isOpen is true, which only ever happens via .mobile-toggle,
+  // a button that's display:none on desktop — so this is mobile-only in practice.
+  useEffect(() => {
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [isOpen]);
+
+  const navIcons = {
+    '/': HomeIcon,
+    '/blog': BookOpen,
+    '/support': LifeBuoy,
+    '/aboutus': Users,
+    '/contactus': Send,
+  };
 
   const products = [
     { label: 'Document Shredders', url: '/select-brand/document-shredders' },
@@ -122,6 +138,9 @@ const Navbar = () => {
         </div>
       </header>
 
+      {/* Mobile Menu backdrop — tap outside the drawer to close it */}
+      <div className={`mobile-menu-backdrop${isOpen ? ' open' : ''}`} onClick={() => setIsOpen(false)} />
+
       {/* Mobile Menu */}
       <div className={`mobile-menu${isOpen ? ' open' : ''}`}>
         <div className="mobile-menu-header">
@@ -131,16 +150,24 @@ const Navbar = () => {
           </button>
         </div>
         <div className="mobile-menu-links">
-          <Link to="/">Home</Link>
+          <Link to="/" className={location.pathname === '/' ? 'mobile-link-active' : ''}><HomeIcon size={18} className="mobile-link-icon" /> Home</Link>
           <button className="mobile-prod-toggle" onClick={() => setMobileProductsOpen(p => !p)}>
-            Products <ChevronDown size={18} style={{ transform: mobileProductsOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+            <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}><Package size={18} className="mobile-link-icon" /> Products</span>
+            <ChevronDown size={18} style={{ transform: mobileProductsOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
           </button>
           {mobileProductsOpen && (
             <div className="mobile-sub-links">
               {products.map(p => <Link key={p.url} to={p.url}>{p.label}</Link>)}
             </div>
           )}
-          {navLinks.slice(1).map(l => <Link key={l.url} to={l.url}>{l.label}</Link>)}
+          {navLinks.slice(1).map(l => {
+            const Icon = navIcons[l.url];
+            return (
+              <Link key={l.url} to={l.url} className={location.pathname === l.url ? 'mobile-link-active' : ''}>
+                {Icon && <Icon size={18} className="mobile-link-icon" />} {l.label}
+              </Link>
+            );
+          })}
         </div>
         <div className="mobile-contact">
           <p>Get in Touch</p>

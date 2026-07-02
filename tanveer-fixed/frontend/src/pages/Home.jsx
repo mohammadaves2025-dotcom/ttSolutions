@@ -210,6 +210,49 @@ const Home = () => {
           .feature-card { padding: 24px 18px; }
           .brands-inner { gap: 28px; }
           .brands-text p { font-size: 14px; }
+
+          /* ─── Category cards: shrunk grid → swipeable row ───
+             This is the "app-like" pattern (Amazon/Flipkart category
+             rails) instead of a tall stack of full-width cards. */
+          .products-grid {
+            display: flex;
+            grid-template-columns: none;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            gap: 14px;
+            margin: 0 -20px;
+            padding: 4px 20px 8px;
+          }
+          .products-grid::-webkit-scrollbar { display: none; }
+          .product-card {
+            scroll-snap-align: start;
+            flex: 0 0 78%;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+          }
+          .product-card:active {
+            transform: scale(0.97);
+            box-shadow: 0 2px 8px rgba(13,27,18,0.1);
+          }
+
+          /* Feature and brand cards get the same tap feedback since
+             hover never fires on a touchscreen. */
+          .feature-card:active, .client-pill:active, .brand-card:active {
+            transform: scale(0.97);
+          }
+          .cta-actions a:active, .cta-actions button:active { transform: scale(0.96); }
+
+          /* Swipe hint so first-time visitors know the row scrolls */
+          .products-section-header::after {
+            content: '← Swipe to see all categories';
+            display: block;
+            margin-top: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--gray-mid);
+            letter-spacing: 0.02em;
+          }
         }
       `}</style>
 
