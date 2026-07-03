@@ -105,11 +105,7 @@ const Carousel = () => {
 
       <div className="carousel-dots">
         {displaySlides.map((_, i) => (
-          <div
-            key={i}
-            className={`carousel-dot${i === current ? ' active' : i < current ? ' passed' : ''}`}
-            onClick={() => goTo(i)}
-          />
+          <div key={i} className={`carousel-dot${i === current ? ' active' : ''}`} onClick={() => goTo(i)} />
         ))}
       </div>
 

@@ -2,6 +2,8 @@ import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import Carousel from '../components/Carousel';
+import HeroMobile from '../components/HeroMobile';
+import '../components/HeroMobile.css';
 import useScrollAnimation from '../hooks/useScrollAnimation';
 import { Shield, Award, Headphones, Truck, ArrowRight, Star, CheckCircle } from 'lucide-react';
 import ShreddersImg from '../assets/shredders.png';
@@ -87,6 +89,17 @@ const Home = () => {
   return (
     <div style={{ minHeight: '100vh' }}>
       <style>{`
+        /* ─── Hero toggle: desktop Carousel vs mobile HeroMobile ───
+           768px matches the breakpoint Carousel itself always used.
+           This is the only place the two heroes' existence is decided;
+           neither component needs to know about the other. */
+        .desktop-hero-wrap { display: block; }
+        .mobile-hero-wrap { display: none; }
+        @media (max-width: 768px) {
+          .desktop-hero-wrap { display: none; }
+          .mobile-hero-wrap { display: block; }
+        }
+
         /* ─── Stats Strip ─── */
         .stats-strip { background: var(--emerald); padding: 40px 0; }
         .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; text-align: center; }
@@ -256,8 +269,12 @@ const Home = () => {
         }
       `}</style>
 
-      {/* Hero Carousel */}
-      <Carousel />
+      {/* Hero — desktop keeps the photo carousel exactly as-is; mobile gets
+          its own dedicated icon-illustrated hero (see HeroMobile.jsx).
+          Toggled purely by CSS below, so neither component's internal
+          styles ever need a media query to accommodate the other. */}
+      <div className="desktop-hero-wrap"><Carousel /></div>
+      <div className="mobile-hero-wrap"><HeroMobile /></div>
 
       {/* Stats Strip */}
       <div className="stats-strip">

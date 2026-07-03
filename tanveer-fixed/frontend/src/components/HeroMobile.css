@@ -1,0 +1,185 @@
+/*
+  HeroMobile.css — mobile-only, icon-illustrated hero.
+
+  Every class here is prefixed `mh-` and unique to this file, so there is
+  no possibility of these rules cascading into Carousel.css or any other
+  component's styles. This component is only ever mounted inside
+  `.mobile-hero-wrap` in Home.jsx, which itself is display:none above
+  768px — so even if something went wrong with the class names, the
+  whole section is hidden on desktop by its parent anyway. Two
+  independent safety nets, on purpose.
+*/
+
+.mh-hero {
+  position: relative;
+  min-height: 88vh;
+  min-height: 88dvh;
+  max-height: 760px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 24px;
+  background: radial-gradient(120% 90% at 18% 0%, #0d8a4c 0%, var(--emerald-deep) 55%, #04331d 100%);
+  isolation: isolate;
+}
+
+/* Ambient glows instead of a product photo — soft, brand-colored, and
+   impossible to look pixelated since it's pure CSS at any screen size. */
+.mh-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: 0;
+}
+.mh-glow-a {
+  width: 260px; height: 260px;
+  top: -60px; right: -70px;
+  background: radial-gradient(circle, rgba(201,168,76,0.35) 0%, rgba(201,168,76,0) 70%);
+}
+.mh-glow-b {
+  width: 320px; height: 320px;
+  bottom: -100px; left: -90px;
+  background: radial-gradient(circle, rgba(18,168,95,0.45) 0%, rgba(18,168,95,0) 70%);
+}
+.mh-grain {
+  position: absolute; inset: 0;
+  background-image: radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px);
+  background-size: 22px 22px;
+  opacity: 0.5;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Segmented progress bar, Instagram-story style */
+.mh-progress {
+  position: absolute;
+  top: calc(env(safe-area-inset-top) + 14px);
+  left: 20px; right: 20px;
+  display: flex; gap: 6px;
+  z-index: 3;
+}
+.mh-seg {
+  flex: 1; height: 3px;
+  border: none; padding: 0;
+  border-radius: 2px;
+  background: rgba(255,255,255,0.22);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+.mh-seg.passed { background: rgba(255,255,255,0.85); }
+.mh-seg-fill {
+  position: absolute; left: 0; top: 0; bottom: 0; width: 0;
+  background: #fff;
+  animation: mhFill 5.5s linear forwards;
+}
+@keyframes mhFill { to { width: 100%; } }
+
+.mh-content {
+  position: relative; z-index: 2;
+  padding-top: 56px;
+  padding-bottom: 24px;
+  animation: mhRise 0.5s cubic-bezier(0.16,1,0.3,1) both;
+}
+@keyframes mhRise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Illustrated icon cluster — the visual anchor in place of a photo */
+.mh-icon-wrap {
+  position: relative;
+  width: 108px; height: 108px;
+  margin-bottom: 28px;
+}
+.mh-icon-ring {
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  border: 1.5px dashed rgba(255,255,255,0.28);
+  animation: mhSpin 22s linear infinite;
+}
+@keyframes mhSpin { to { transform: rotate(360deg); } }
+.mh-icon-badge {
+  position: absolute;
+  top: 12px; left: 12px; right: 12px; bottom: 12px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(155deg, rgba(255,255,255,0.16), rgba(255,255,255,0.04));
+  border: 1px solid rgba(255,255,255,0.25);
+  color: #fff;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.2);
+  backdrop-filter: blur(6px);
+}
+.mh-icon-dot {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--gold);
+}
+.mh-icon-dot-1 { width: 9px; height: 9px; top: 2px; right: 10px; }
+.mh-icon-dot-2 { width: 6px; height: 6px; bottom: 6px; left: -2px; background: var(--emerald-bright); }
+.mh-icon-dot-3 { width: 5px; height: 5px; bottom: 22px; right: -4px; background: #fff; opacity: 0.7; }
+
+.mh-label {
+  display: flex; align-items: center; gap: 10px;
+  font-family: var(--font-body);
+  font-size: 12.5px; font-weight: 700;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(255,255,255,0.68);
+  margin-bottom: 12px;
+}
+.mh-label-dash { width: 22px; height: 2px; background: var(--gold); border-radius: 2px; flex-shrink: 0; }
+
+.mh-title {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 8.5vw, 38px);
+  line-height: 1.12;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 12px;
+  max-width: 320px;
+}
+.mh-subtitle {
+  font-family: var(--font-body);
+  font-size: 15.5px; line-height: 1.55;
+  color: rgba(255,255,255,0.78);
+  margin: 0 0 26px;
+  max-width: 320px;
+}
+
+.mh-actions {
+  display: flex; align-items: center; gap: 18px;
+  margin-bottom: 20px;
+}
+.mh-cta-primary {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: #fff; color: var(--emerald-deep);
+  font-family: var(--font-body);
+  font-weight: 700; font-size: 14.5px;
+  padding: 14px 22px;
+  border-radius: 100px;
+  transition: transform 0.12s ease;
+}
+.mh-cta-primary:active { transform: scale(0.96); }
+.mh-cta-secondary {
+  font-family: var(--font-body);
+  font-weight: 600; font-size: 14px;
+  color: rgba(255,255,255,0.82);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  padding: 8px 2px;
+}
+
+.mh-trust {
+  font-family: var(--font-body);
+  font-size: 12px; font-weight: 500;
+  color: rgba(255,255,255,0.5);
+  margin: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mh-icon-ring { animation: none; }
+  .mh-content { animation: none; }
+  .mh-seg-fill { animation: none; width: 100%; }
+}
